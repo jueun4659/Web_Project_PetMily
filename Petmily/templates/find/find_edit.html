@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+{% include "form_errors.html" %}
+<section id="banner">
+  <div class="inner">
+    <section id="footer">
+      <div class="inner">
+        <h2 class="major" style="color:black;"></h2>
+        <h3 style="color:black;"></h3>
+        <div class="container ">
+            {% comment %} {% include "form_errors.html" %} {% endcomment %}
+            <!-- 폼 요소에 type='file' 포함이 되어 있다면 form enctype(인코딩타입) 속성 필요함 text 형태의 데이터 전송 시 enctype 타입은 application/x-www-form-urlencode(기본) 설정되어있음 -->
+        
+            <form method="POST" class="col-lg-8 col-md-10 mx-auto" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-group txt-color">
+                <label for="title" class="form-label" style="color:black;">제목</label>
+                <input type="text" name="title" id="title" class="form-control" value="{{form.title.value}}" style="background-color: CornSilk">
+              </div>
+              <div class="form-group my-2" >
+                <label for="place" class="form-label"  style="color:black;">장소</label>
+                <input type="text" name="place" id="place" class="form-control" value="{{form.place.value}}" style="background-color: CornSilk">
+              </div>
+              <div class="form-group my-2">
+                <label for="image" class="form-label" style="color:black;">사진첨부</label>
+                <input type="file" name="image" id="image" class="form-control" value="{{form.image.url}}" style="background-color: CornSilk">
+              </div>
+              <div class="form-group my-2">
+                <label for="content" class="form-label">내용</label>
+                <textarea name="content" id="content" rows="7" class="form-control" value="{{form.content.value}}" style="background-color: CornSilk"></textarea>
+              </div>
+              <p></p>
+                <button class="btn text-white" style="background-color:#675444; color:#fff" type="submit">Save</button>
+              </div>
+            </form>
+          </div>
+    </div>
+  </form>
+  {% endblock contents %}

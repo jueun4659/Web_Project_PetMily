@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+  <div class="container">
+    {% include "form_errors.html" %}
+    <!-- 폼 요소에 type='file' 포함이 되어 있다면 form enctype(인코딩타입) 속성 필요함 text 형태의 데이터 전송 시 enctype 타입은 application/x-www-form-urlencode(기본) 설정되어있음 -->
+
+    <form method="POST" class="col-lg-8 col-md-10 mx-auto" enctype="multipart/form-data">
+      <h4 class="pb-2 mb-2 mt-5">
+        <strong>게시글 작성</strong>
+      </h4>
+      <hr>
+      {% csrf_token %}
+      <div class="form-group my-2">
+        <label for="title" class="form-label">제목</label>
+        <input type="text" name="title" id="title" class="form-control" value=""/>
+      </div>
+      <div class="form-group my-2">
+        <label for="place" class="form-label">장소</label>
+        <input type="text" name="place" id="place" class="form-control" value=""/>
+      </div>
+      <div class="form-group my-2">
+        <label for="image" class="form-label">사진첨부</label>
+        <input type="file" name="image" id="image" class="form-control" value=""/>
+      </div>
+      <div class="form-group my-2">
+        <label for="content" class="form-label">내용</label>
+        <textarea name="content" id="content" rows="7" class="form-control"></textarea>
+      </div>
+      <div class="form-group my-3">
+        <button class="btn text-white" style="background-color: #675444; color: #fff" type="submit">
+          글쓰기
+        </button>
+      </div>
+    </form>
+  </div>
+{% endblock contents %}

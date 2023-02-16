@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block style %}
+<style>
+  .fa-solid {
+    color:#675444 ;
+  }
+</style>
+<script src="https://kit.fontawesome.com/482f2e22f6.js" crossorigin="anonymous"></script>
+{% endblock style %}
+{% block contents %}
+<div class="container my-3">
+  <div class='pt-5'>
+    <div class="d-flex justify-content-center mt-5 mb-5">
+      <a href="{% url 'find_index' %}" class='move'>
+        <h1><i class="fa-solid fa-paw"></i> <strong>임보/입양</strong> <i class="fa-solid fa-paw"></i></h1>
+      </a>
+    </div>
+    <hr style="width:40rem; margin: 0 auto;"/>
+    <div class="d-flex justify-content-center mt-5 mb-5">
+      {% if keyword %}
+        <h5>'{{keyword}}' 검색 결과입니다.</h5>
+      {% endif %}
+    </div>
+  </div>
+  <div class="d-flex mt-5 mb-3">
+    <!-- 정렬 -->
+    <div class="col-1 me-auto">
+      <select name="" id="sort" class="form-control sort text-center">
+        <option value="created_at" {% if sort == 'created_at' %}selected{% endif %}>최신순</option>
+        <option value="voter" {% if sort == 'voter' %}selected{% endif %}>추천순</option>
+        <option value="comment_count" {% if sort == 'comment_count' %}selected{% endif %}>인기순</option>
+      </select>
+    </div>
+    <!-- 검색 -->
+    <div class="col-1 me-2">
+      <select name="" id="search_kind" class="form-control text-center">
+        <option value="all" selected="selected">전체</option>
+        <option value="title"{% if search_kind == 'title' %}selected{% endif %}>제목</option>
+        <option value="writer"{% if search_kind == 'writer' %}selected{% endif %}>작성자</option>
+        <option value="content"{% if search_kind == 'content' %}selected{% endif %}>내용</option>
+        <option value="place"{% if search_kind == 'place' %}selected{% endif %}>장소</option>
+      </select>
+    </div>
+    <div class="col-2 mb-3">
+      <div class="input-group">
+        <input onkeyup='enterkey()' type="text" name="keyword" id="keyword" class="form-control" value="{{keyword|default_if_none:''}}">
+        <button type="button" class="btn btn-outline-secondary search">검색</button>
+      </div>
+    </div>
+  </div>
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+      {% for care in list %}
+      <div class="col">
+        <div class="card h-100" style="height: 486px;">
+          <a href="{% url 'find_detail' care.pk %}" class="move">
+            {% if care.image %}
+            <img src="{{care.image.url}}" alt="" class="card-img-top">
+            {% endif %}
+            <div class="card-body">
+              <p>
+                <b class="card-title">{{care.title}}</b>
+                
+                <span class="text-danger small mx-2">[{{care.findcomment_set.count}}]</span>
+               
+              </p>
+              <p class="card-text">
+                <small><i>장소 : {{care.place}}</i></small></br>
+                <small><i>아이디 : {{care.writer.email}}</i></small></br>
+                <small><i>조회수 : {{care.view_count}}</i></small></br>
+                <small>
+                  <i>추천수 :
+                    {% if care.voter.count %}
+                    <span class="badge bg-warning px-2 py-1">{{care.voter.count}}</span>
+                    {% endif %}
+                  </i>
+                </small>
+              </p>
+            </div>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="mt-3" style="float: right">
+      <a href="{% url 'find_write' %}" class="btn btn-secondary">글 작성</a>
+    </div>
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center mb-5">
+        {% if list.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="#" data-page="{{list.previous_page_number}}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% endif %}
+        {% for page in list.paginator.page_range %}
+          {% if page >= list.number|add:-5 and page <= list.number|add:5 %}
+            <li class="page-item {% if page == list.number %}active{% endif %}">
+              <a class="page-link" href="#" data-page="{{page}}">{{page}}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        {% if list.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="#" data-page="{{list.next_page_number}}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+</div>
+  <!-- 검색시 동작하는 폼-->
+  <form action="{% url 'find_index' %}" id="searchForm">
+    <input type="hidden" name='keyword' value="{{keyword|default_if_none:''}}" class='keyword'>
+    <input type="hidden" name='page' value="{{page|default_if_none:''}}" id='page'>
+    <input type="hidden" name='sort' value="{{sort|default_if_none:''}}" id='sort'>
+  </form>
+
+{% endblock contents %}
+{% block script %}
+  <script>
+    const searchform = document.querySelector("#searchForm")
+    // 검색버튼 클릭 시
+    document.querySelector(".search").addEventListener("click",()=>{
+      // 사용자가 입력한 검색어 가져오기
+      let keyword = document.querySelector("#keyword").value;
+      // 가져온 검색어를 searchForm 안의 keyword value 값으로 지정하고 page 값 을 1로 지정
+      document.querySelector("#searchForm > .keyword").value = keyword;
+      document.querySelector("#searchForm > #page").value = 1;
+      // searchForm 전송
+      searchform.submit();
+    })
+    let page_link = document.querySelectorAll(".page-link")
+    page_link.forEach((obj,idx)=>{
+      obj.addEventListener("click",(e)=>{
+        console.log(e.target.dataset.page)
+        document.querySelector("#searchForm > #page").value = e.target.dataset.page;
+        // searchForm 전송
+        searchform.submit();
+      })
+    })
+    document.querySelector("#sort").addEventListener('change',(e)=>{
+      document.querySelector("#searchForm > #sort").value = e.target.value;
+      searchform.submit();
+    })
+
+    let post_list = document.querySelectorAll('td>a.nav-link')
+    post_list.forEach((post,idx)=>{ 
+      post.addEventListener('click',(e)=>{
+        // 제목 클릭시 a 태그 기능 중지
+      e.preventDefault()
+      // a태그의 href 값 가져오기
+      console.log(e.target.href)
+      searchform.setAttribute("action", e.target.getAttribute("href"))
+      searchform.submit();
+    })
+  })
+  </script>
+{% endblock script %}

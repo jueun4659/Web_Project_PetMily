@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+  <section class="pb-3 col-lg-8 col-md-10 mx-auto">
+    <div class="card bg-light">
+      <div class="card-body">
+        <form method="POST">
+          {% csrf_token %}
+          <!-- Comment form-->
+          <input type="textarea" class="form-control" name="contents" id="contents" rows="3" value="{{form.content.value}}" placeholder="Join the discussion  and leave a comment!"></input>
+          <p></p>
+          <button class="btn text-white" style="background-color:gray;" type="submit">Save</button>
+        </form>
+      </div>
+    </div>
+  </section>
+{% endblock contents%}

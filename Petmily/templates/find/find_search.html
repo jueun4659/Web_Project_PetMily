@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+
+  <body>
+    {% for posts in blogs %}
+      {% if forloop.counter0 | divisibleby : 3 %}
+        <div class="row my-3">
+        {% endif %}
+        <div class="col-md-3" style='float:none; margin:0 auto;' id="">
+          <div class="card" style="width: 18.9rem;">
+            {% if posts.image %}
+              <img src="{{posts.image.url}}" alt="" class="card-img-top">
+            {% endif %}
+            <div class="card-body"></div>
+            <p class="card-text" style="font-weight: bold;">{{posts.title}}
+              {% if pots.comment_set.count > 0 %}
+                <span class="text-danger small mx-2">[{{posts.comment_set.count }}]</span>
+              {% endif %}
+            </p>
+            <p class="card-text">
+              <small>
+                <i>장소:
+                  {{posts.place}}</i>
+              </small>
+            </p>
+            <p class="card-text">
+              <small>
+                <i>아이디:
+                  {{user.username}}</i>
+              </small>
+            </p>
+            <p class="card-text">
+              <small>
+                <i>조회수:
+                  {{posts.view_count}}</i>
+              </small>
+            </p>
+
+            <p class="">
+              <a href="{% url 'find_detail' posts.pk %}" class="btn text-white" style="background-color: gray;">보러가기</a>
+            </p>
+          </div>
+        </div>
+        {% if forloop.counter0 | add : "1" | divisibleby : 3 %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div class="row">
+      <div class="col-sm-12 text-center">
+        <div class="pagination">
+          <span class="step-links text-center" style="width:100%;">
+            {% if blogs.has_previous %}
+              <a href="?page=1">&laquo;</a>
+              <a href="?page={{ blogs.previous_page_number }}">{{ blogs.previous_page_number }}</a>
+            {% endif %}
+
+            <span class="current">
+              {{ blogs.number }}
+            </span>
+
+            {% if blogs.has_next %}
+              <a href="?page={{ blogs.next_page_number }}">{{ blogs.next_page_number }}</a>
+              <a href="?page={{ blogs.paginator.num_pages }}">&raquo;</a>
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+{% endblock contents %}
